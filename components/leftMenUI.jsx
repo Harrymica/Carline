@@ -4,7 +4,9 @@ import {
   Text, 
   TouchableOpacity, 
   Modal, 
-  Animated
+  Animated,
+  Dimensions,
+  Platform
 } from 'react-native';
 import { 
   Menu, 
@@ -18,21 +20,38 @@ import {
   X 
 } from 'lucide-react-native';
 import { AuthContext } from '@/lib/authContext';
+import ThemeToggle from './ThemeToggle';
 import { SignOutButton } from '@/components/SignOutButton';
 import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo';
-import {Link} from "expo-router";
+import { useRouter } from "expo-router";
+import { useClerk } from '@clerk/clerk-expo';
+
+// 1. CONSTANT WIDTH: Ensures animation and design match perfectly
+const DRAWER_WIDTH = 300;
 
 export default function LeftMenu() {
   const [visible, setVisible] = useState(false);
-  const { user } = useUser();
-  const slideAnim = useRef(new Animated.Value(0)).current; // 0 = closed, 1 = open
- 
+  const slideAnim = useRef(new Animated.Value(0)).current; 
+//  const { signOut } = useClerk()
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+      // Redirect to your desired page
+      router.replace('/')
+    } catch (err) {
+    
+      console.error(JSON.stringify(err, null, 2))
+    }
+  }
+
   const openMenu = () => {
     setVisible(true);
     Animated.timing(slideAnim, {
       toValue: 1,
       duration: 300,
-      useNativeDriver: true,
+      useNativeDriver: true, // Native driver is smoother for transforms
     }).start();
   };
 
@@ -44,10 +63,10 @@ export default function LeftMenu() {
     }).start(() => setVisible(false));
   };
 
-  // Interpolate animation values
   const translateX = slideAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [-300, 0], // Slide from -300px (offscreen) to 0px
+    // 2. MATCH OFFSET: Slide from exactly -300 to 0
+    outputRange: [-DRAWER_WIDTH, 0], 
   });
 
   const backdropOpacity = slideAnim.interpolate({
@@ -56,10 +75,13 @@ export default function LeftMenu() {
   });
 
   const authState = useContext(AuthContext);
+  const navigate = (url) => {
+      router.push(url);
 
+  }
   return (
     <View>
-      {/* 1. TRIGGER BUTTON */}
+      {/* TRIGGER BUTTON */}
       <TouchableOpacity 
         onPress={openMenu}
         className="flex h-12 w-12 items-center justify-center rounded-full bg-transparent shadow-md"
@@ -67,14 +89,18 @@ export default function LeftMenu() {
         <Menu color="white" size={24} />
       </TouchableOpacity>
 
-      {/* 2. FULL SCREEN MODAL */}
-      <Modal transparent visible={visible} onRequestClose={closeMenu} animationType="none">
-        <View className="flex-1 relative">
+      {/* FULL SCREEN MODAL */}
+      <Modal 
+        transparent 
+        visible={visible} 
+        onRequestClose={closeMenu} 
+        animationType="none"
+        // Ensure the modal covers the status bar on Android
+        statusBarTranslucent={true}
+      >
+        <View className="flex-1 relative z-50">
           
-          {/* BACKDROP: Absolute & Full Screen. 
-              Placed BEFORE the drawer so it sits behind it. 
-              The 'activeOpacity={1}' prevents the flicker effect when tapping.
-          */}
+          {/* BACKDROP */}
           <TouchableOpacity 
             activeOpacity={1} 
             onPress={closeMenu}
@@ -86,72 +112,63 @@ export default function LeftMenu() {
             />
           </TouchableOpacity>
 
-          {/* SLIDING DRAWER: Renders on top of the backdrop */}
+          {/* SLIDING DRAWER */}
           <Animated.View 
-            style={{ transform: [{ translateX }], width:"50%", height:"100vh" }}
-            className="h-full  bg-white shadow-xl"
+            style={{ 
+              transform: [{ translateX }], 
+              width: DRAWER_WIDTH, // Fixed width
+              height: '100%'       // '100%' works on Mobile & Web (unlike 100vh)
+            }}
+            className="absolute left-0 top-0 bottom-0 bg-white shadow-xl"
           >
-            {/* Using a View here ensures touches on the menu don't fall through to the backdrop */}
-            <View className="flex-1 p-6 bg-white" onStartShouldSetResponder={() => true}>
+            {/* 3. LAYOUT FIX: 
+                'flex-col justify-between' pushes the top group up 
+                and the bottom group down.
+            */}
+            <View 
+              className="flex-1 p-6 flex-col justify-between bg-background-light dark:bg-background-dark"
+              onStartShouldSetResponder={() => true}
+            >
               
-              {/* Header with Close Button */}
-              <View className="mb-8 flex-row items-center justify-between">
-                <Text className="text-2xl font-bold text-blue-600">Carline</Text>
-                <TouchableOpacity 
-                  onPress={closeMenu}
-                  className="rounded-full p-2 bg-gray-50 active:bg-gray-200"
-                >
-                  <X color="#9ca3af" size={24} />
-                </TouchableOpacity>
+              {/* === TOP GROUP (Header + Links) === */}
+              <View>
+                {/* Header */}
+                <View className="mb-8 flex-row items-center justify-between p-4 ">
+                  <Text className="text-2xl font-bold text-slate-700 dark:text-slate-200">Carline</Text>
+                  <TouchableOpacity 
+                    onPress={closeMenu}
+                    className="rounded-full p-2 bg-gray-50 active:bg-gray-200"
+                  >
+                    <X color="#9ca3af" size={24} />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Main Menu Links */}
+                <View className="flex-col gap-4 p-4 ">
+                  <MenuLink onPress={() => navigate("/car/1")} icon={<CarFront size={20} color="#2563eb" />} bg="bg-blue-100" label="Buy Car" />
+                  <MenuLink onPress={() => navigate("/login")} icon={<Key size={20} color="#ea580c" />} bg="bg-orange-100" label="Rent Car" />
+                  <MenuLink onPress={() => navigate("/services/servicepage")} icon={<FileText size={20} color="#9333ea" />} bg="bg-purple-100" label="Services" />
+                  <MenuLink icon={<Gamepad2 size={20} color="#16a34a" />} bg="bg-green-100" label="Fun Zone" />
+                  <ThemeToggle />
+                  <View className="my-4 h-[1px] bg-gray-100" />
+
+                  <SimpleLink icon={<Settings size={20} color="#4b5563" />} label="Settings" />
+                  <SimpleLink icon={<HelpCircle size={20} color="#4b5563" />} label="Help & Support" />
+                </View>
               </View>
 
-              {/* Menu Links */}
-              <View className="flex-col gap-2">
-                <MenuLink 
-                  icon={<CarFront size={20} color="#2563eb" />} 
-                  bg="bg-blue-100"
-                  label="Buy Car"
-                />
-                <MenuLink 
-                  icon={<Key size={20} color="#ea580c" />} 
-                  bg="bg-orange-100"
-                  label="Rent Car"
-                />
-                <MenuLink 
-                  icon={<FileText size={20} color="#9333ea" />} 
-                  bg="bg-purple-100"
-                  label="Services"
-                />
-                <MenuLink 
-                  icon={<Gamepad2 size={20} color="#16a34a" />} 
-                  bg="bg-green-100"
-                  label="Fun Zone"
-                />
-
-                <View className="my-4 h-[1px] bg-gray-100" />
-
-                <SimpleLink icon={<Settings size={20} color="#4b5563" />} label="Settings" />
-                <SimpleLink icon={<HelpCircle size={20} color="#4b5563" />} label="Help & Support" />
-                
-                 <View>
-              <SignedIn>
-                <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
-                <SignOutButton />
-              </SignedIn>
-              <SignedOut>
-                <Link href="/login">
-                  <Text>Sign in</Text>
-                </Link>
-                <Link href="/sign-up">
-                  <Text>Sign up</Text>
-                </Link>
-              </SignedOut>
-            </View>
-                <TouchableOpacity onPress={authState.logOut}  className="flex-row items-center gap-4 rounded-xl p-3 mt-2 active:bg-red-50">
+              {/* === BOTTOM GROUP (Logout) === */}
+              <View>
+                 {/* This stays at the bottom because of justify-between */}
+                <TouchableOpacity 
+                  onPress={handleSignOut} 
+                  className="flex-row items-center gap-4 rounded-xl p-3 active:bg-red-50"
+                >
                   <LogOut size={20} color="#ef4444"/>
                   <Text className="font-medium text-red-500">Log Out</Text>
                 </TouchableOpacity>
               </View>
+
             </View>
           </Animated.View>
         </View>
@@ -161,22 +178,22 @@ export default function LeftMenu() {
 }
 
 // Helper Components
-function MenuLink({ icon, bg, label }) {
+function MenuLink({ icon, bg, label, onPress }) {
   return (
-    <TouchableOpacity className="flex-row items-center gap-4 rounded-xl p-3 active:bg-gray-100">
+    <TouchableOpacity onPress={onPress} className="flex-row items-center gap-4 rounded-xl p-3 active:bg-gray-100">
       <View className={`flex h-10 w-10 items-center justify-center rounded-lg ${bg}`}>
         {icon}
       </View>
-      <Text className="font-medium text-gray-600">{label}</Text>
+      <Text className="font-medium text-slate-700 dark:text-slate-200">{label}</Text>
     </TouchableOpacity>
   );
 }
 
 function SimpleLink({ icon, label }) {
   return (
-    <TouchableOpacity className="flex-row items-center gap-4 rounded-xl p-3 active:bg-gray-100">
+    <TouchableOpacity className="flex-row items-center gap-4 rounded-xl p-3  active:bg-gray-100">
       {icon}
-      <Text className="font-medium text-gray-600">{label}</Text>
+      <Text className="font-medium text-slate-700 dark:text-slate-200">{label}</Text>
     </TouchableOpacity>
   );
 }

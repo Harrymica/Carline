@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable, } from 'react-native';
 import React from 'react';
 import { X } from "lucide-react-native";
 import { useState } from "react";
@@ -17,9 +17,10 @@ const [testDrive, setTestDrive] = useState(true)
 
 
   return (
-    <ScrollView className="fixed inset-0 z-50 flex-row items-end w-full " style={{width:"100%"}}>
+    <ScrollView className="fixed inset-0 z-50 flex-row items-end w-full " contentContainerStyle={{width:"100%"}}>
       {/* Backdrop */}
       <Pressable className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onPress={onClose}></Pressable>
+
 
       {/* Modal Content */}
       <View className="relative w-full mb-6 max-w-md bg-white rounded-t-[32px] sm:rounded-[32px] overflow-hidden shadow-2xl transform transition-transform duration-300 ease-out max-h-[100vh] overflow-y-auto">
@@ -28,7 +29,7 @@ const [testDrive, setTestDrive] = useState(true)
             <Pressable onPress={onClose} className="text-slate-400 hover:text-white transition-colors text-sm">
               Cancel
             </Pressable>
-            <h2 className="text-lg font-bold">Filters</h2>
+            <Text className="text-lg font-bold">Filters</Text>
             <Pressable onPress={onClose} className="text-slate-400 hover:text-white transition-colors text-sm">
               Reset
             </Pressable>
@@ -37,13 +38,22 @@ const [testDrive, setTestDrive] = useState(true)
           {/* Active Filters Preview */}
           <View className="flex-row gap-2 overflow-x-auto pb-2 no-scrollbar">
             <View className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-xs font-medium whitespace-nowrap">
-              Free test drive <X className="w-3 h-3 ml-1" />
+             <Text>
+              Free test drive 
+              </Text> 
+              <X className="w-3 h-3 ml-1" />
             </View>
             <View className="flex-row items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-xs font-medium whitespace-nowrap">
-              Toyota <X className="w-3 h-3 ml-1" />
+              <Text>
+                Toyota
+              </Text>
+               <X className="w-3 h-3 ml-1" />
             </View>
             <View className="flex-row items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-xs font-medium whitespace-nowrap">
-              $23k - $80k <X className="w-3 h-3 ml-1" />
+              <Text>
+                $23k - $80k 
+              </Text>
+              <X className="w-3 h-3 ml-1" />
             </View>
           </View>
         </View>
@@ -67,7 +77,7 @@ const [testDrive, setTestDrive] = useState(true)
                   <path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z" />
                 </svg>
               </View>
-              <span className="font-bold text-[#0f172a]">Free test drive</span>
+              <Text className="font-bold text-[#0f172a]">Free test drive</Text>
             </View>
             <Pressable
               onPress={() => setTestDrive(!testDrive)}
@@ -75,7 +85,7 @@ const [testDrive, setTestDrive] = useState(true)
                 testDrive ? "bg-[#3B6CFF]" : "bg-slate-200"
               }`}
             >
-              <span
+              <View
                 className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${
                   testDrive ? "translate-x-5" : "translate-x-0"
                 }`}
@@ -86,7 +96,7 @@ const [testDrive, setTestDrive] = useState(true)
           {/* Brands */}
           <View className="mb-8">
             <View className="flex-row justify-between items-center mb-4">
-              <h3 className="font-bold text-[#0f172a]">Brand car</h3>
+              <Text className="font-bold text-[#0f172a]">Brand car</Text>
               <Pressable className="text-slate-400 text-xs font-medium hover:text-[#3B6CFF]">More brand</Pressable>
             </View>
             <View className="grid grid-cols-4 gap-3">
@@ -109,9 +119,9 @@ const [testDrive, setTestDrive] = useState(true)
                   >
                     <img src={brand.icon || "/placeholder.svg"} alt={brand.name} className="w-6 h-6 rounded-full" />
                   </View>
-                  <span className={`text-[10px] font-bold ${i === 1 ? "text-white" : "text-slate-900"}`}>
+                  <Text className={`text-[10px] font-bold ${i === 1 ? "text-white" : "text-slate-900"}`}>
                     {brand.name}
-                  </span>
+                  </Text>
                 </Pressable>
               ))}
             </View>
@@ -119,32 +129,39 @@ const [testDrive, setTestDrive] = useState(true)
 
           {/* Price Range */}
           <View className="mb-8">
-            <h3 className="font-bold text-[#0f172a] mb-4">Price range</h3>
+            <Text className="font-bold text-[#0f172a] mb-4">Price range</Text>
             {/* Histogram */}
             <View className="flex-row items-end gap-1 h-12 mb-2 px-2">
               {[30, 50, 40, 70, 50, 80, 60, 90, 50].map((h, i) => (
                 <View key={i} className="flex-1 bg-[#3B6CFF]/20 rounded-t-sm" style={{ height: `${h}%` }} />
               ))}
             </View>
-            <input
+            {/* <input
               type="range"
               min="0"
               max="100"
               value={priceRange}
               onChange={(e) => setPriceRange(Number.parseInt(e.target.value))}
               className="w-full accent-[#3B6CFF] h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer"
-            />
+            /> */}
             <View className="flex-row justify-between mt-4">
-              <View className="px-4 py-2 rounded-xl border border-slate-100 font-bold text-[#0f172a]">$23,000</View>
-              <span className="text-slate-300 self-center">—</span>
-              <View className="px-4 py-2 rounded-xl border border-slate-100 font-bold text-[#0f172a]">$80,000</View>
+              <View className="px-4 py-2 rounded-xl border border-slate-100 font-bold text-[#0f172a]">
+               <Text>
+                $23,000
+                </Text> 
+                </View>
+              <Text className="text-slate-300 self-center">—</Text>
+              <View className="px-4 py-2 rounded-xl border border-slate-100 font-bold text-[#0f172a]">
+                
+                <Text>$80,000</Text>
+                </View>
             </View>
           </View>
 
           {/* Features */}
           <View className="mb-8">
             <View className="flex-row justify-between items-center mb-4 ">
-              <h3 className="font-bold text-[#0f172a]">Features</h3>
+              <Text className="font-bold text-[#0f172a]">Features</Text>
               <Pressable className="text-slate-400 text-xs font-medium hover:text-[#3B6CFF]">More feature</Pressable>
             </View>
             <View className="flex-row gap-2 overflow-x-auto pb-2 no-scrollbar">
@@ -164,6 +181,8 @@ const [testDrive, setTestDrive] = useState(true)
           </Pressable>
         </View>
       </View>
+
+      
     </ScrollView>
   )
 }

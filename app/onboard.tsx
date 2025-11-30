@@ -66,12 +66,12 @@ export default function OnboardingPage() {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1)
     } else {
-      router.push("/login")
+      router.push("/login");
     }
   }
 
   const skip = () => {
-    router.push("/login")
+    router.push("/login");
   }
 
   // Interpolate background color based on slide index

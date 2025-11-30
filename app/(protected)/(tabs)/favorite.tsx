@@ -34,7 +34,7 @@ const favoriteCars = [
 
 export default function FavoritesPage() {
   return (
-    <ScrollView className="min-h-screen bg-gray-50 pb-24">
+    <ScrollView className="min-h-screen bg-background-light dark:bg-background-dark pb-24">
       {/* Header */}
       <View className="sticky top-0 z-30 
       bg-gradient-to-r from-gray-900 
@@ -67,10 +67,10 @@ export default function FavoritesPage() {
             <View className="w-1/2 space-y-2 px-4 p-2">
               <Text className="font-bold text-lg">{car.name}</Text>
               <Text className="font-bold text-gray-900">{car.price}</Text>
-              <View className="flex-row items-center gap-1 text-xs text-gray-500">
-                <View className="text-yellow-400">★</View>
-                <View className="font-medium text-black">{car.rating}</View>
-                <View>({car.reviews} Review)</View>
+              <View className="flex-row items-center gap-1 text-xs text-gray-500 p-4">
+                <Text className="text-yellow-400">★</Text>
+                <Text className="font-medium text-black">{car.rating}</Text>
+                <Text>({car.reviews} Review)</Text>
               </View>
               <View className="flex-row items-center gap-2 pt-1">
                 <Button className="flex-1 bg-black text-white text-xs font-medium py-2 rounded-full">

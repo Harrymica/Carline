@@ -7,14 +7,24 @@ import React from 'react';
 import { Checkbox } from "expo-checkbox";
 import { LinearGradient } from 'expo-linear-gradient';
 import {Svg, Path} from "react-native-svg";
-export default function Login() {
+// import { useMutation } from "convex/react";
+// import { api } from "../convex/_generated/api";
+import { SignOutButton } from '@/components/SignOutButton';
+import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo';
+import { ImageBackground } from 'expo-image';
+
+
+export default function loginScreen() {
   const { signIn, setActive, isLoaded } = useSignIn()
-  const router = useRouter()
+  const router = useRouter();
 
   const [emailAddress, setEmailAddress] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  //create user in convex
+  const { user } = useUser();
+  //const syncUser = useMutation(api.users.syncUser);
 
   // Handle the submission of the sign-in form
   const onSignInPress = async () => {
@@ -32,6 +42,15 @@ export default function Login() {
       // and redirect the user
       if (signInAttempt.status === 'complete') {
         await setActive({ session: signInAttempt.createdSessionId })
+        //save the clerk user to convex
+        // if (user) {
+        //       // Sync Clerk user to Convex DB
+        //       syncUser({
+        //         full_name: user.fullName || "",
+        //         avatar_url: user.imageUrl,
+        //         phone: user.primaryPhoneNumber?.phoneNumber,
+        //       });
+        //     }
         router.replace('/')
       } else {
         // If the status isn't complete, check why. User might need to
@@ -46,27 +65,39 @@ export default function Login() {
   }
 
 
+  // useEffect(() => {
+  //   if (user) {
+  //     // Sync Clerk user to Convex DB
+  //     syncUser({
+  //       full_name: user.fullName || "",
+  //       avatar_url: user.imageUrl,
+  //       phone: user.primaryPhoneNumber?.phoneNumber,
+  //     });
+  //   }
+  // }, [user]);
 
 
 
 
   return (
-      <LinearGradient colors={["#6a2af4", "#6a2af4", "#9262f8"]} style={styles.background}>
+    //   <LinearGradient colors={["#6a2af4", "#6a2af4", "#9262f8"]} style={styles.background}>
         
       
-      <ScrollView className="flex min-h-screen flex-col px-6 py-12">
+      <View className="min-h-screen bg-white ">
+      <View className='relative h-1/2 rounded-b-3xl bg-blue-600'>
        
-  
-        <View className="mb-8">
+      <View className='absolute mx-auto w-full max-w-md mt-36 px-6'>
+
+        <View className="mb-8 mt-4">
           <Text className="mb-2 text-3xl font-bold text-white">Sign in to Carline</Text>
-          <Text className="text-white">Welcome back! Please enter your details.</Text>
+          <Text className=" text-white">Welcome back! Please enter your details.</Text>
         </View>
   
         <View className="flex flex-col gap-6">
           <View className="space-y-2">
-            <Text className="text-white">Email</Text>
+            {/* <Text className="text-gray-700">Email</Text> */}
             <View className="relative">
-              <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              {/* <Mail style={{left:10, top:33, zIndex:10}}  className="absolute left-3 top-3 h-5 w-5 text-gray-700" /> */}
               
               <TextInput
                 autoCapitalize="none"
@@ -79,9 +110,9 @@ export default function Login() {
           </View>
   
           <View className="space-y-2">
-            <Text className='text-white'>Password</Text>
+            {/* <Text className='text-gray-700'>Password</Text> */}
             <View className="relative">
-              <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              {/* <Lock style={{left:10, top:33, zIndex:10}} className="absolute left-3 top-3 h-5 w-5 text-gray-700" /> */}
               
             <TextInput
               value={password}
@@ -96,13 +127,6 @@ export default function Login() {
   
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center space-x-2">
-              <Checkbox id="remember" />
-              <Text
-                
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
-              >
-                Remember me
-              </Text>
             </View>
             <Link href="/" className="text-sm font-medium text-white hover:text-blue-500">
               Forgot password?
@@ -121,52 +145,55 @@ export default function Login() {
   
         <View className="my-8 flex-row items-center gap-4">
           <View className="h-px flex-1 bg-gray-200" />
-          <View className="text-sm text-white"><Text>Or continue with</Text>
+          <View >
+            <Text className="text-sm text-gray-700">Or continue with
+              
+            </Text>
           </View>
           <View className="h-px flex-1 bg-gray-200" />
         </View>
   
-        <View className="grid grid-cols-2 gap-4">
-          <Button variant="outline" className="h-12 rounded-xl border-gray-200 hover:bg-gray-50 ">
-            <Svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
-              <Path
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                fill="#4285F4"
-              />
-              <Path
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                fill="#34A853"
-              />
-              <Path
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                fill="#FBBC05"
-              />
-              <Path
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                fill="#EA4335"
-              />
-            </Svg>
-            Google
+        <View className="flex-row  gap-4">
+          <Button variant="outline" className=" w-1/2 h-12 rounded-xl border-gray-200  hover:bg-gray-50 ">
+           <Text className='text-gray-700 font-extrabold'> Google</Text>
+           <ImageBackground className='w-5 h-5' source={require("@/assets/logos/google.png")} style={[StyleSheet.absoluteFill, styles.google]} />
           </Button>
-          <Button variant="outline" className="h-12 rounded-xl border-gray-200 hover:bg-gray-50">
-            <Svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-              <Path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.78 1.18-.19 2.31-.89 3.51-.84 1.54.06 2.74.79 3.5 1.99-3.14 1.85-2.55 6.12.56 7.45-.68 1.74-1.61 3.45-2.65 3.59zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
-            </Svg>
-            Apple
+          <Button variant="outline" className="w-1/2 h-12 rounded-xl border-gray-200  hover:bg-gray-50">
+            <ImageBackground source={require("@/assets/logos/apple.png")} style={[StyleSheet.absoluteFill, styles.google]}/>
+            <Text className='text-gray-700  font-extrabold'>Apple </Text>
+            
           </Button>
         </View>
   
-        <View className="mt-auto pt-6 text-center text-sm">
+        <View className="flex-row gap-2 mt-auto pt-6 text-center text-sm">
           <View className="text-white">
             <Text>
               Don't have an account?</Text> 
           </View>
-          <Link href="/signup" className="font-semibold text-white hover:text-blue-500">
+          <Link href="/signup" className="font-semibold text-blue-500 hover:text-blue-500">
             Sign Up
           </Link>
         </View>
-      </ScrollView>
-      </LinearGradient>
+
+                 {/* <View>
+                      <SignedIn>
+                        <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
+                        <SignOutButton />
+                      </SignedIn>
+                      <SignedOut>
+                        <Link href="/login">
+                          <Text>Sign in</Text>
+                        </Link>
+                        <Link href="/signup">
+                          <Text>Sign up</Text>
+                        </Link>
+                      </SignedOut>
+                    </View> */}
+
+      </View>
+       </View>
+      </View>
+    //   </LinearGradient>
     )
 
 }
@@ -179,4 +206,9 @@ const styles = StyleSheet.create({
     top: 0,
     height: '100%',
   },
+
+  google:{
+    height:35,
+    width:35
+  }
 })

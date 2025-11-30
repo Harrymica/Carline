@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Trophy, Brain, Puzzle, ChevronRight, Star } from 'lucide-react-native';
 import {Link} from "expo-router";
 import {Image} from "expo-image";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 
 async function getFunZoneData() {
   //const leaderboard = [];
@@ -30,7 +30,9 @@ async function getFunZoneData() {
 export default function FunZonePage() {
 
   return(
-    <View>Fun Zone</View>
+    <View>
+      <Text>Fun Zone</Text>
+    </View>
   );
 }
  // const { teasers, leaderboard } = await getFunZoneData();

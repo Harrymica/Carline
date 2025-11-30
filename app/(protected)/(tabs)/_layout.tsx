@@ -13,13 +13,13 @@ const _layout = () => {
         name='index'options={{title:"Home"}}
         />
         <Tabs.Screen
-        name='favorite'options={{title:"Favorite"}}
-        />
-        <Tabs.Screen
-        name='fun_zone'options={{title:"Fun"}}
-        />
-        <Tabs.Screen
         name='explore'options={{title:"Explore"}}
+        />
+        <Tabs.Screen
+        name='fun_zone'options={{title:"Fun Zone"}}
+        />
+        <Tabs.Screen
+        name='favorite'options={{title:"Favorite"}}
         />
         <Tabs.Screen
         name='profile'options={{title:"Profile"}}

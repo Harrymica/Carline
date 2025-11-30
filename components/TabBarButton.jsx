@@ -5,9 +5,9 @@ import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } f
 
 const TabBarButton = (props) => {
 
-    const {isFocused, label, routeName, color} = props;
+    const {isFocused, label, routeName, color, iconFunction} = props;
     const scale = useSharedValue(0);
-
+    
 
     useEffect(() => {
         scale.value = withSpring( typeof isFocused === 'boolean'? ( isFocused ? 1 : 0): isFocused,
@@ -27,7 +27,7 @@ const TabBarButton = (props) => {
         const top = interpolate(
             scale.value,
             [0, 1],
-            [0, 7],
+            [0, 4],
         );
 
         return{
@@ -52,15 +52,16 @@ const TabBarButton = (props) => {
     <Pressable {...props} style={styles.container}>
         <Animated.View style={animatedIconStyle}>
       {
-        icons[routeName]({
-        color
-     })
-                }
+        iconFunction({ color }, isFocused)
+    //     icons[routeName]({
+    //     color
+    //  })
+      }
 
         </Animated.View>
-      <Animated.Text style={[{ color, fontSize:11 }, animatedTextStyle]}>
+      {/* <Animated.Text style={[{ color, fontSize:11 }, animatedTextStyle]}>
             {label}
-      </Animated.Text>
+      </Animated.Text> */}
     </Pressable>
   )
 }
@@ -71,6 +72,7 @@ const styles = StyleSheet.create({
         gap:5,
         justifyContent:"center",
         alignItems:"center",
+        
   }
 })
 

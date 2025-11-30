@@ -6,9 +6,10 @@ import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View } from 'react-native';
 import { useContext, useEffect } from 'react';
 import 'react-native-reanimated';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+// import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useColorScheme } from 'nativewind';
 // import { AuthContext } from '@/lib/authContext';
-import { useAuth } from '@clerk/clerk-expo';
+ import { useAuth } from '@clerk/clerk-expo';
 
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -18,8 +19,8 @@ const isLoggedIn = false;
 export default function RootLayout() {
 
 
-//  const authState = useContext(AuthContext);
-  const { isSignedIn, isLoaded } = useAuth();
+ //  const authState = useContext(AuthContext);
+    // const { isSignedIn, isLoaded } = useAuth();
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     // SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -43,20 +44,21 @@ export default function RootLayout() {
   // if(!authState.isLoggedIn){
   //   return <Redirect href="/onboard"/>;
   // }
-  if (!isLoaded) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  // if (!isLoaded) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //       <ActivityIndicator size="large" />
+  //     </View>
+  //   );
+  // }
 
-  if (!isSignedIn) {
-    return <Redirect href="/onboard" />;
-  }
+  // if (!isSignedIn) {
+  //   return <Redirect href="/onboard" />
+  // }
 
 
   return (
+    
     <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

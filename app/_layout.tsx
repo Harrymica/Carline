@@ -8,7 +8,7 @@ import 'react-native-reanimated';
 import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider } from '@/lib/authContext';
- import { tokenCache } from '@clerk/clerk-expo/token-cache';
+//import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import * as SecureStore from 'expo-secure-store';
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ConvexReactClient } from "convex/react";
@@ -35,7 +35,7 @@ SplashScreen.preventAutoHideAsync();
 //   },
 // };
 
- /*const tokenCache = {
+ const tokenCache = {
   async getToken(key: string) {
     try {
       const item = await SecureStore.getItemAsync(key);
@@ -58,7 +58,7 @@ SplashScreen.preventAutoHideAsync();
       return;
     }
   },
-};*/
+};
 
 /*const tokenCache = {
   async getToken(key: string) {
@@ -107,10 +107,9 @@ export default function RootLayout() {
     return null;
   }
 
-  return (
-
-     <ClerkProvider tokenCache={tokenCache} publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!}>
-   <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+  return(
+    //  <ClerkProvider tokenCache={tokenCache} publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!}>
+    //    <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
         <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
           <Stack>
             <Stack.Screen name="(protected)" 
@@ -135,14 +134,68 @@ export default function RootLayout() {
               animation:"none",
               headerShown: false,
             }}/>
+            <Stack.Screen
+            name='rentals'
+            options={{
+              animation:"none",
+              headerShown: false,
+            }}/>
+            <Stack.Screen
+            name='car/[id]'
+            options={{
+              animation:"none",
+              headerShown: false,
+            }}/>
+            <Stack.Screen          
+            name='services/servicepage'
+            options={{
+              animation:"none",
+              headerShown: false,
+              
+            }}/>
             {/* <Stack.Screen name="+not-found" /> */}
           </Stack>
           <StatusBar style="auto" />
-        </ThemeProvider>
-      
-     </ConvexProviderWithClerk>
-     </ClerkProvider>
-
-
+        </ThemeProvider>  
+      //   </ConvexProviderWithClerk>
+      //  </ClerkProvider>
   );
+
+  // return (
+
+  // <ClerkProvider tokenCache={tokenCache} publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!}>
+  //  <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+  //       <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
+  //         <Stack>
+  //           <Stack.Screen name="(protected)" 
+  //           options={{ headerShown: false,
+  //             animation: "none"
+  //           }} />
+  //             <Stack.Screen
+  //           name='onboard'
+  //           options={{
+  //             animation:"none",
+  //             headerShown: false,
+  //           }}/>
+  //           <Stack.Screen
+  //           name='login'
+  //           options={{
+  //             animation:"none",
+  //             headerShown: false,
+  //           }}/>
+  //           <Stack.Screen
+  //           name='signup'
+  //           options={{
+  //             animation:"none",
+  //             headerShown: false,
+  //           }}/>
+  //           {/* <Stack.Screen name="+not-found" /> */}
+  //         </Stack>
+  //         <StatusBar style="auto" />
+  //       </ThemeProvider>      
+  //  </ConvexProviderWithClerk>
+  // </ClerkProvider>
+
+
+  // );
 }

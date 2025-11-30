@@ -1,9 +1,12 @@
 import type React from "react"
 import { useState } from "react"
 import {Link} from "expo-router"
-import { ArrowLeft, Share2, Heart, Star, MessageCircle, Phone, RefreshCcw, FileInput } from "lucide-react-native"
-import { ScrollView, Text, View } from "react-native"
+import { ArrowLeft, Share2, Heart, Star, MessageCircle, Phone, RefreshCcw, FileTextInput } from "lucide-react-native"
+import { NativeSyntheticEvent, ScrollView, Text, TextInput, TextInputChangeEventData, View } from "react-native"
 import { Image } from "expo-image"
+import Button from "@/components/ui/button"
+import Slider from '@react-native-community/slider';
+
 
 export default function CarDetails() {
   const [rotation, setRotation] = useState(0)
@@ -30,29 +33,29 @@ export default function CarDetails() {
     ],
   }
 
-  const handleRotate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRotation(Number.parseInt(e.target.value))
+  const handleRotate = (e: NativeSyntheticEvent<TextInputChangeEventData>) => {
+    setRotation(Number.parseInt(e.nativeEvent.text))
   }
 
   return (
-    <ScrollView className="min-h-screen bg-slate-50 pb-32 font-sans">
+    <ScrollView stickyHeaderIndices={[0]} className="min-h-screen bg-slate-50 pb-32 font-sans">
       {/* Header */}
-      <View className="p-6 pt-12 flex-row justify-between items-center sticky top-0 z-10 bg-slate-50/80 backdrop-blur-md">
-        <Link
+      <View className="p-6 pt-12 flex-row justify-between items-center sticky top-0 z-10 bg-blue-300 dark:bg-background-dark backdrop-blur-md">
+        <View
           href="/"
           className="flex-row w-10 h-10 rounded-full bg-white shadow-sm  items-center justify-center text-slate-900 hover:bg-slate-100 transition-colors"
            style={{display:"flex"}}
            >
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
-        <Text className="font-bold text-lg text-[#0f172a]">Car Details</Text>
+          <ArrowLeft className="w-5 h-5 " />
+        </View>
+        <Text className="font-bold text-lg text-slate-700 dark:text-slate-200">Car Details</Text>
         <View className="flex-row gap-3">
-          <button className="flex-row  w-10 h-10 rounded-full bg-white shadow-sm items-center justify-center text-slate-900 hover:bg-slate-100 transition-colors" style={{display:"flex"}}>
+          <Button className="flex-row  w-10 h-10 rounded-full bg-white shadow-sm items-center justify-center text-slate-900 hover:bg-slate-100 transition-colors" style={{display:"flex"}}>
             <Share2 className="w-5 h-5" />
-          </button>
-          <button className="flex-row  w-10 h-10 rounded-full bg-white shadow-sm items-center justify-center text-slate-900 hover:bg-slate-100 transition-colors" style={{display:"flex"}}>
+          </Button>
+          <Button className="flex-row  w-10 h-10 rounded-full bg-white shadow-sm items-center justify-center text-slate-900 hover:bg-slate-100 transition-colors" style={{display:"flex"}}>
             <Heart className="w-5 h-5" />
-          </button>
+          </Button>
         </View>
       </View>
 
@@ -62,7 +65,7 @@ export default function CarDetails() {
           {/* Simulated 360 view using rotation transform */}
           <View
             className="w-full h-full transition-transform duration-100 ease-linear"
-            style={{ transform: `rotateY(${rotation}deg)` }}
+            // style={{ transform: `rotateY(${rotation}deg)` }}
           >
             <Image
               source={car.images[0] || "/placeholder.svg"}
@@ -79,123 +82,126 @@ export default function CarDetails() {
 
         {/* Rotation Slider */}
         <View className="relative h-12 flex-row items-center justify-center mb-6">
-          <input
-            type="range"
-            min="0"
-            max="360"
-            value={rotation}
-            onChange={handleRotate}
-            className="w-full max-w-[200px] accent-[#3B6CFF] cursor-ew-resize"
-          />
+          <Slider
+              style={{ width: '100%', maxWidth: 200, height: 40 }} // Apply basic styles inline
+              minimumValue={0}
+              maximumValue={360}
+              value={rotation}
+              // Use onValueChange, which passes the number directly
+              onValueChange={(value) => setRotation(Math.round(value))}
+              minimumTrackTintColor="#3B6CFF"
+              maximumTrackTintColor="#d1d5db" // A light gray color
+              thumbTintColor="#3B6CFF"
+            />
         </View>
 
         {/* Gallery Thumbnails */}
         <View className="flex-row gap-3 overflow-x-auto pb-2 no-scrollbar">
           {car.images.map((img, i) => (
-            <button
+            <Button
               key={i}
               className={`relative w-20 h-16 rounded-xl overflow-hidden flex-shrink-0 border-2 ${
                 i === 0 ? "border-[#3B6CFF]" : "border-transparent"
               }`}
             >
-              <img src={img || "/placeholder.svg"} alt={`View ${i}`} className="w-full h-full object-cover" />
-            </button>
+              <Image source={img || "/placeholder.svg"} alt={`View ${i}`} className="w-full h-full object-cover" />
+            </Button>
           ))}
-          <button className="w-20 h-16 rounded-xl bg-[#3B6CFF] text-white font-bold flex-row items-center justify-center flex-shrink-0">
+          <Button className="w-20 h-16 rounded-xl bg-[#3B6CFF] text-white font-bold flex-row items-center justify-center flex-shrink-0">
             +10
-          </button>
+          </Button>
         </View>
       </View>
 
       {/* Car Info */}
       <View className="px-6 mb-6">
         <View className="flex-row justify-between items-start mb-2">
-          <span className="px-3 py-1 rounded-lg bg-blue-50 text-[#3B6CFF] text-xs font-bold uppercase tracking-wider">
+          <Text className="px-3 py-1 rounded-lg bg-blue-50 text-[#3B6CFF] text-xs font-bold uppercase tracking-wider">
             {car.type}
-          </span>
+          </Text>
           <View className="flex-row items-center gap-1 text-amber-400 font-bold">
             <Star className="w-4 h-4 fill-current" />
-            <span className="text-slate-900">{car.rating}</span>
+            <Text className="text-slate-900">{car.rating}</Text>
           </View>
         </View>
-        <h2 className="text-2xl font-bold text-[#0f172a] mb-6">{car.name}</h2>
+        <Text className="text-2xl font-bold text-[#0f172a] mb-6">{car.name}</Text>
 
         {/* Tabs */}
-        <View className="flex-row border-b border-slate-100 mb-6">
+        <View className="flex-row gap-2 border-b border-slate-100 mb-6">
           {["About", "Gallery", "Review"].map((tab) => (
-            <button
+            <Button
               key={tab}
               className={`flex-1 pb-3 text-sm font-medium transition-colors relative ${
                 activeTab === tab.toLowerCase() ? "text-[#3B6CFF]" : "text-slate-400"
               }`}
-              onClick={() => setActiveTab(tab.toLowerCase())}
+              onPress={() => setActiveTab(tab.toLowerCase())}
             >
               {tab}
               {activeTab === tab.toLowerCase() && (
                 <View className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#3B6CFF] rounded-t-full"></View>
               )}
-            </button>
+            </Button>
           ))}
         </View>
 
         {/* Rental Options */}
-        <View className="bg-white p-1 rounded-xl flex-row mb-6 border border-slate-100">
-          <button
+        <View className="bg-white p-1 gap-2 rounded-xl flex-row mb-6 border border-slate-100">
+          <Button
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
               rentalType === "short" ? "bg-[#1A1D26] text-white shadow-md" : "text-slate-500 hover:bg-slate-50"
             }`}
-            onClick={() => setRentalType("short")}
+            onPress={() => setRentalType("short")}
           >
             Short Term
-          </button>
-          <button
+          </Button>
+          <Button
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
               rentalType === "long" ? "bg-[#1A1D26] text-white shadow-md" : "text-slate-500 hover:bg-slate-50"
             }`}
-            onClick={() => setRentalType("long")}
+            onPress={() => setRentalType("long")}
           >
             Long Term
-          </button>
-          <button
+          </Button>
+          <Button
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
               rentalType === "buy" ? "bg-[#1A1D26] text-white shadow-md" : "text-slate-500 hover:bg-slate-50"
             }`}
-            onClick={() => setRentalType("buy")}
+            onPress={() => setRentalType("buy")}
           >
             Buy Car
-          </button>
+          </Button>
         </View>
 
         {/* Owner Info */}
         <View className="mb-6">
-          <h3 className="font-bold text-[#0f172a] mb-3">Rent Partner</h3>
+          <Text className="font-bold text-[#0f172a] mb-3">Rent Partner</Text>
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-3">
-              <img
-                src={car.owner.image || "/placeholder.svg"}
+              <Image
+                source={car.owner.image || "/placeholder.svg"}
                 alt={car.owner.name}
                 className="w-12 h-12 rounded-full object-cover"
               />
               <View>
-                <p className="font-bold text-[#0f172a]">{car.owner.name}</p>
-                <p className="text-xs text-slate-500">{car.owner.role}</p>
+                <Text className="font-bold text-[#0f172a]">{car.owner.name}</Text>
+                <Text className="text-xs text-slate-500">{car.owner.role}</Text>
               </View>
             </View>
             <View className="flex-row gap-3">
-              <button className="w-10 h-10 rounded-full bg-blue-50 text-[#3B6CFF] flex-row items-center justify-center hover:bg-blue-100 transition-colors">
+              <Button className="w-10 h-10 rounded-full bg-blue-50 text-[#3B6CFF] flex-row items-center justify-center hover:bg-blue-100 transition-colors">
                 <MessageCircle className="w-5 h-5" />
-              </button>
-              <button className="w-10 h-10 rounded-full bg-blue-50 text-[#3B6CFF] flex-row items-center justify-center hover:bg-blue-100 transition-colors">
+              </Button>
+              <Button className="w-10 h-10 rounded-full bg-blue-50 text-[#3B6CFF] flex-row items-center justify-center hover:bg-blue-100 transition-colors">
                 <Phone className="w-5 h-5" />
-              </button>
+              </Button>
             </View>
           </View>
         </View>
 
         {/* Description */}
         <View className="mb-24">
-          <h3 className="font-bold text-[#0f172a] mb-2">About</h3>
-          <p className="text-slate-500 text-sm leading-relaxed">{car.description}</p>
+          <Text className="font-bold text-[#0f172a] mb-2">About</Text>
+          <Text className="text-slate-500 text-sm leading-relaxed">{car.description}</Text>
         </View>
       </View>
 
@@ -203,15 +209,15 @@ export default function CarDetails() {
       <View className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 p-6 pb-8 rounded-t-[32px] shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
         <View className="flex-row items-center justify-between gap-6">
           <View>
-            <p className="text-slate-400 text-xs mb-1">Price</p>
+            <Text className="text-slate-400 text-xs mb-1">Price</Text>
             <View className="flex-row items-baseline gap-1">
-              <span className="text-2xl font-bold text-[#0f172a]">${car.price.toFixed(2)}</span>
-              <span className="text-slate-400 text-sm">/hr</span>
+              <Text className="text-2xl font-bold text-[#0f172a]">${car.price.toFixed(2)}</Text>
+              <Text className="text-slate-400 text-sm">/hr</Text>
             </View>
           </View>
-          <button className="flex-row bg-[#3B6CFF] text-white font-bold py-4 rounded-[20px] shadow-lg shadow-blue-500/30 active:scale-[0.98] transition-transform">
+          <Button className="flex-row bg-[#3B6CFF] text-white font-bold py-2 rounded-[20px] shadow-lg shadow-blue-500/30 active:scale-[0.98] transition-transform">
             Book Now
-          </button>
+          </Button>
         </View>
       </View>
     </ScrollView>
